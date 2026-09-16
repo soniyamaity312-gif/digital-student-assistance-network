@@ -46,18 +46,18 @@ function App() {
       <header>
         <div className="container nav">
           <a href="/" className="logo">
-            SmartHelpdesk
+            Digital Student Assistance Network
           </a>
         </div>
       </header>
 
       <div className="container">
         <div className="hero-text">
-          <h1>Welcome to Smart Student Helpdesk</h1>
+          <h1>Welcome to Digital Student Assistance Network </h1>
 
           <p>
-            Efficiently track and resolve campus issues. Select your role to
-            continue.
+            Manage student assessments and academic activities efficiently.
+            Select your role to continue.
           </p>
         </div>
 
