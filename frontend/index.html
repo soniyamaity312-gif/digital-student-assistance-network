@@ -79,9 +79,19 @@
     <script>
         async function checkSession() {
             try {
-                // Adjust path as index.html is in frontend/, check_session is in backend/auth/
-                // Relative path from frontend/index.html to backend/auth/check_session.php is ../backend/auth/check_session.php
-                const response = await fetch('../backend/auth/check_session.php');
+                let response;
+                try {
+                    response = await fetch('http://localhost:5000/api/auth/check-session', {
+                        credentials: 'include'
+                    });
+                } catch (netErr) {
+                    response = null;
+                }
+
+                if (!response || !response.ok) {
+                    response = await fetch('../backend/auth/check_session.php');
+                }
+
                 const result = await response.json();
 
                 if (result.logged_in) {

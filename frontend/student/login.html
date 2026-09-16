@@ -69,11 +69,21 @@
             const alertBox = document.getElementById('alertBox');
 
             try {
-                const response = await fetch('../../backend/auth/login.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, role: 'student' })
-                });
+                let response;
+                try {
+                    response = await fetch('http://localhost:5000/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ email, password, role: 'student' })
+                    });
+                } catch (netErr) {
+                    response = await fetch('../../backend/auth/login.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password, role: 'student' })
+                    });
+                }
 
                 const result = await response.json();
 

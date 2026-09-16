@@ -74,10 +74,18 @@
             const alertBox = document.getElementById('alertBox');
 
             try {
-                const response = await fetch('../../backend/auth/register.php', {
+                const response = await fetch('http://localhost:5000/api/auth/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        role: 'student'
+                    })
                 });
 
                 const result = await response.json();
