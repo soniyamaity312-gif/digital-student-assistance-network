@@ -4,92 +4,44 @@ A full-stack web application designed to provide a centralized platform for comm
 
 The system allows students to submit academic assistance requests, complaints, and queries, while staff can manage assigned requests and provide responses. Admin can manage users, requests, notices, categories, and system activities.
 
-📌 Project Setup Guide
+<h2>📌 Project Setup Guide</h2>
 
-Follow the steps below to run the Digital Student Assistance Network on your local machine.
+Follow the steps below carefully to run the Digital Student Assistance Network on your local machine.
 
-🛠️ Technologies Used
-Frontend: React.js
-Backend: Node.js + Express.js
-Database: MongoDB
-API: REST API
-Authentication: JWT
-Package Manager: npm
-Code Editor: VS Code
-Version Control: Git + GitHub
-✅ Requirements
+<h2>🟢 Requirements</h2>
 
-Before running the project, make sure the following software is installed on your system:
+Before starting, make sure the following software is installed on your computer:
 
-1. Node.js
+🟢 Node.js and npm
+🍃 MongoDB or a MongoDB Atlas account
+💻 Visual Studio Code or any code editor
+🌐 Any modern web browser
+🔧 Git
+Check Node.js Installation
 
-Download and install Node.js from:
-
-https://nodejs.org/
-
-After installation, verify it:
+Open Terminal / CMD and run:
 
 node -v
+
+Then check npm:
+
 npm -v
 
-You should see the installed Node.js and npm versions.
+If both commands display a version number, Node.js is installed correctly.
 
-2. MongoDB
+<h2>📥 1. Clone the Repository</h2>
 
-You need MongoDB to store the application's data.
+Open Terminal / CMD and run:
 
-You can use either:
+git clone https://github.com/Techrithm/digital-student-assistance-network.git
 
-MongoDB Community Server installed locally
-MongoDB Atlas cloud database
+Move into the project folder:
 
-For local MongoDB, make sure the MongoDB service is running before starting the backend.
+cd digital-student-assistance-network
 
-Verify MongoDB installation if applicable:
+Your project structure should look approximately like:
 
-mongosh
-
-If you are using MongoDB Atlas, make sure you have:
-
-A MongoDB Atlas account
-A database cluster
-A database user
-The MongoDB connection string
-3. Git
-
-Install Git if it is not already installed.
-
-Verify:
-
-git --version
-4. Code Editor
-
-You can use Visual Studio Code or any other code editor.
-
-5. Web Browser
-
-Use a modern browser such as:
-
-Google Chrome
-Microsoft Edge
-Mozilla Firefox
-📥 1. Clone the Repository
-
-Open Terminal / CMD / Git Bash and run:
-
-git clone https://github.com/Techrithm/smart-student-helpdesk.git
-
-Move into the project directory:
-
-cd smart-student-helpdesk
-
-The project folder should contain the frontend and backend files.
-
-📂 2. Check the Project Structure
-
-The project should have a structure similar to:
-
-smart-student-helpdesk/
+digital-student-assistance-network/
 │
 ├── frontend/
 │   ├── src/
@@ -99,10 +51,9 @@ smart-student-helpdesk/
 │
 ├── backend/
 │   ├── config/
-│   ├── controllers/
 │   ├── models/
 │   ├── routes/
-│   ├── middleware/
+│   ├── controllers/
 │   ├── server.js
 │   ├── package.json
 │   └── ...
@@ -110,13 +61,11 @@ smart-student-helpdesk/
 ├── README.md
 └── ...
 
-The exact folder structure may vary depending on the current version of the project.
+<h2>📦 2. Install Backend Dependencies</h2>
 
-📦 3. Install Backend Dependencies
+Open Terminal inside the project folder.
 
-Open a terminal inside the project folder.
-
-Go to the backend directory:
+First, go to the backend folder:
 
 cd backend
 
@@ -124,131 +73,107 @@ Install all required Node.js packages:
 
 npm install
 
-This will install the dependencies listed in the backend package.json.
+Wait until the installation is completed.
 
-🗄️ 4. Set Up MongoDB
+<h2>🍃 3. Set Up MongoDB</h2>
 
-The application uses MongoDB instead of MySQL.
+The project uses MongoDB as its database.
 
-You can use either a local MongoDB database or MongoDB Atlas.
+You can use either:
 
-Option A: Use Local MongoDB
+Option A: MongoDB Local
 
-Make sure MongoDB is installed and running.
+Install MongoDB on your computer and make sure the MongoDB service is running.
 
-Start MongoDB if required by your installation.
+The backend can then connect to your local MongoDB database.
 
-Then the backend can connect to your local MongoDB instance.
+Example connection:
 
-A typical MongoDB connection string is:
+mongodb://127.0.0.1:27017/digital_student_assistance_network
+Option B: MongoDB Atlas
 
-mongodb://127.0.0.1:27017/smart_student_helpdesk
-Option B: Use MongoDB Atlas
+You can also use MongoDB Atlas instead of installing MongoDB locally.
 
-If you are using MongoDB Atlas:
-
-Create a MongoDB Atlas account.
-Create a cluster.
-Create a database user.
-Allow your IP address in Network Access.
-Click Connect.
-Select Drivers.
-Copy the MongoDB connection string.
+Create a MongoDB Atlas cluster and obtain your MongoDB connection string.
 
 It will look similar to:
 
-mongodb+srv://<username>:<password>@cluster.mongodb.net/smart_student_helpdesk
+mongodb+srv://<username>:<password>@cluster.mongodb.net/digital_student_assistance_network
 
-Replace:
+⚠️ Do not upload your actual MongoDB username, password, or connection string to GitHub.
 
-<username>
-
-and
-
-<password>
-
-with your MongoDB credentials.
-
-⚙️ 5. Configure Environment Variables
-
-The backend requires environment variables such as the MongoDB connection string and JWT secret.
+<h2>⚙️ 4. Configure Environment Variables</h2>
 
 Inside the backend folder, create a file named:
 
 .env
 
-Add the required configuration.
+Add the required environment variables.
 
 Example:
 
 PORT=5000
-
-MONGO_URI=mongodb://127.0.0.1:27017/smart_student_helpdesk
-
+MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 
-If you are using MongoDB Atlas, replace MONGO_URI with your Atlas connection string:
+Replace:
 
-MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/smart_student_helpdesk
-⚠️ Important
+your_mongodb_connection_string
 
-Do NOT upload your .env file to GitHub if it contains:
+with your actual MongoDB connection string.
 
-Database passwords
-JWT secrets
-API keys
-Private credentials
+Example for local MongoDB:
+
+MONGO_URI=mongodb://127.0.0.1:27017/digital_student_assistance_network
+
+Example for MongoDB Atlas:
+
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/digital_student_assistance_network
+
+🔒 Important: Never push the .env file to GitHub.
 
 Make sure .env is included in .gitignore.
 
-Example:
-
-.env
-node_modules/
-▶️ 6. Start the Backend Server
+<h2>▶️ 5. Start the Backend Server</h2>
 
 Make sure you are inside the backend folder:
 
 cd backend
 
-Start the backend using:
+Start the backend server using:
 
 npm start
 
-If the project uses a development script, you can use:
+If your project uses a development script such as nodemon, you can use:
 
 npm run dev
 
-The backend will normally run on:
-
-http://localhost:5000
-
-You should see a message similar to:
+When the server starts successfully, you should see a message similar to:
 
 Server running on port 5000
 MongoDB connected successfully
 
-Keep this terminal running. Do not close it while using the application.
+Keep this terminal running.
 
-💻 7. Install Frontend Dependencies
+<h2>⚛️ 6. Install Frontend Dependencies</h2>
 
-Open a new terminal.
+Open a new Terminal / CMD window.
 
-Go to the project directory:
+Go to the project folder:
 
-cd smart-student-helpdesk
+cd digital-student-assistance-network
 
 Then enter the frontend folder:
 
 cd frontend
 
-Install the React dependencies:
+Install the required React dependencies:
 
 npm install
 
-This will install all packages required by the React application.
+Wait for all packages to finish installing.
 
-🚀 8. Start the React Frontend
+<h2>🚀 7. Start the React Frontend</h2>
 
 Inside the frontend folder, run:
 
@@ -258,70 +183,51 @@ If the project uses Vite, run:
 
 npm run dev
 
-The React application will normally open at:
-
-http://localhost:3000
-
-or, for Vite:
+The terminal will display a local URL, usually something similar to:
 
 http://localhost:5173
 
-Open the URL shown in your terminal.
+Open that URL in your browser.
 
-🔗 9. Frontend + Backend Connection
+<h2>🌐 8. Open the Application</h2>
 
-The React frontend communicates with the Node.js/Express backend through REST APIs.
+Once both the backend and frontend servers are running:
 
-The general architecture is:
+Frontend
+http://localhost:5173
 
-React Frontend
-      │
-      │ HTTP Requests
-      ▼
-Node.js + Express Backend
-      │
-      │ MongoDB Driver / Mongoose
-      ▼
-MongoDB Database
+or the URL shown by your terminal.
 
-For example:
+Backend
 
-Student
-   ↓
-React UI
-   ↓
-REST API
-   ↓
-Express.js
-   ↓
-MongoDB
+Usually:
 
-Make sure the backend server is running before using features that require database access.
+http://localhost:5000
 
-👤 10. User Roles
+The exact port depends on the configuration in your project.
 
-The system supports different types of users.
+<h2>🔐 9. Login / User Roles</h2>
+
+The system supports different types of users:
 
 🎓 Student
 
 Students can:
 
-Register/Login
-Submit complaints
 Submit assistance requests
-Submit queries
+Submit complaints
+Raise academic queries
 View request status
-View responses
-Receive notices
+Receive responses
+Track their requests
 👨‍🏫 Staff / Faculty
 
 Staff can:
 
-Login
 View assigned requests
-Manage requests
-Respond to students
+Respond to student queries
 Update request status
+Manage assistance requests assigned to them
 👨‍💼 Admin
 
 Admin can:
@@ -330,85 +236,15 @@ Manage users
 Manage students and staff
 Manage requests
 Manage categories
-Manage notices
+Publish notices
 Monitor system activities
-🧪 11. Test the Application
+Manage the overall system
 
-After starting both servers:
+<h2>🔁 10. Making Changes to the Project</h2>
 
-Backend
-http://localhost:5000
-Frontend
-http://localhost:3000
+After making changes to the code:
 
-or:
-
-http://localhost:5173
-
-Open the frontend URL in your browser.
-
-Then test:
-
-Registration/Login
-Student dashboard
-Creating a complaint/request
-Viewing request status
-Staff dashboard
-Responding to requests
-Admin dashboard
-User management
-Notice management
-🗃️ 12. MongoDB Database
-
-Unlike the previous MySQL version, this project does not require XAMPP or phpMyAdmin.
-
-MongoDB automatically creates the required database and collections when the application inserts data.
-
-The database may contain collections such as:
-
-users
-complaints
-complaintreplies
-notices
-categories
-statushistory
-
-The exact collection names depend on the Mongoose models used in the project.
-
-You can view your database using:
-
-MongoDB Compass
-MongoDB Atlas
-mongosh
-🧹 13. Install Dependencies Again
-
-If you download or clone the project on another computer, node_modules may not be included.
-
-Run:
-
-Backend
-cd backend
-npm install
-Frontend
-
-Open another terminal:
-
-cd frontend
-npm install
-
-Then start both applications again.
-
-🛑 14. Stop the Servers
-
-To stop the backend or frontend server:
-
-Ctrl + C
-
-Press Ctrl + C in the terminal where the server is running.
-
-🔁 15. Making Changes to the Project
-
-After modifying the code, check the changed files:
+First check the changed files:
 
 git status
 
@@ -416,27 +252,38 @@ Add the changes:
 
 git add .
 
-Commit the changes:
+Create a commit:
 
-git commit -m "your commit message"
+git commit -m "your message"
 
-Push the changes:
+Push the changes to GitHub:
 
 git push
-
-For example:
-
+Example
 git add .
 git commit -m "Updated student dashboard"
 git push
-🔄 16. Get the Latest Changes
 
-Before working on an existing clone, get the latest changes from GitHub:
+<h2>🔄 11. Pull the Latest Changes</h2>
+
+If another developer has pushed new changes to the repository, first get the latest version:
 
 git pull
 
-Then reinstall dependencies if package.json was changed:
+Then install any newly added dependencies:
 
 npm install
 
-Run this separately inside the backend and frontend folders if both have their own package.json.
+Run this inside the appropriate frontend or backend folder if their package.json files were changed.
+
+<h2>🛑 12. Stopping the Servers</h2>
+
+To stop a running server:
+
+Press:
+
+Ctrl + C
+
+You need to stop both the frontend and backend terminals separately.
+
+Humanity has not yet invented a button labeled "stop all development servers," apparently.
