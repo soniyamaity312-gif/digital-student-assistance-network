@@ -293,21 +293,27 @@ Humanity has not yet invented a button labeled "stop all development servers," a
 If everything is already configured, the basic setup is:
 
 1️⃣ Clone
-git clone https://github.com/Techrithm/digital-student-assistance-network.git
+git clone https://github.com/Techrithm/smart-student-helpdesk.git
 cd digital-student-assistance-network
+
 2️⃣ Install Backend
 cd backend
 npm install
+
 3️⃣ Configure .env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
+
 4️⃣ Start Backend
 npm start
+
 5️⃣ Open a New Terminal
 cd digital-student-assistance-network/frontend
+
 6️⃣ Install Frontend
 npm install
+
 7️⃣ Start Frontend
 npm start
 
