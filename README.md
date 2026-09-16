@@ -33,7 +33,7 @@ If both commands display a version number, Node.js is installed correctly.
 
 Open Terminal / CMD and run:
 
-git clone https://github.com/Techrithm/digital-student-assistance-network.git
+git clone https://github.com/Techrithm/smart-student-helpdesk.git
 
 Move into the project folder:
 
