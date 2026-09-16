@@ -1,102 +1,92 @@
-# Smart Student Helpdesk
+# 🎓 Digital Student Assistance Network
 
-## 📌 Project Setup Guide
+A full-stack web application designed to provide a centralized platform for communication and assistance between **Students, Staff/Faculty, and Admin**.
 
-Follow these steps to run the project on your local machine.
-
----
-
-## ✅ Requirements
-
-- XAMPP installed (Apache + MySQL)
-- Any code editor
-- Web browser
+The system allows students to submit academic assistance requests, complaints, and queries, while staff can manage assigned requests and provide responses. Admin can manage users, requests, notices, categories, and system activities.
 
 ---
 
-## 📥 1. Clone the Repository
+## 🚀 Features
 
-Open terminal / CMD and run:
+### 👨‍🎓 Student
 
-git clone https://github.com/Techrithm/smart-student-helpdesk.git
+- Student registration and login
+- Secure JWT authentication
+- View and edit profile
+- Submit assistance requests
+- Select request category
+- View submitted requests
+- Track request status
+- View staff responses
+- View notices and announcements
+- Cancel/delete eligible requests
+- Student dashboard with request statistics
 
-Then move the folder into:
+### 👨‍🏫 Staff / Faculty
 
-C:\xampp\htdocs
+- Secure staff login
+- Staff dashboard
+- View assigned student requests
+- View request details
+- View student information
+- Update request status
+- Respond to student requests
+- Manage assigned complaints and queries
+- Track pending, in-progress and resolved requests
 
-So the path becomes:
+### 👨‍💼 Admin
 
-C:\xampp\htdocs\smart-student-helpdesk
-
----
-
-## 🚀 2. Start XAMPP
-
-Open XAMPP Control Panel:
-
-- Start **Apache**
-- Start **MySQL**
-
----
-
-## 🗄️ 3. Import Database
-
-1. Open browser and go to:
-
-http://localhost/phpmyadmin
-
-2. Click **New**
-3. Create database:
-
-smart_student_helpdesk
-
-4. Select the new database
-5. Click **Import**
-6. Choose the file:
-
-smart_student_helpdesk.sql  
-(from the project folder)
-
-7. Click **Go**
-
-Database is now restored.
+- Admin dashboard
+- Manage students
+- Manage staff
+- Add staff members
+- Delete users
+- View all assistance requests
+- Assign requests to staff
+- Change request status
+- Create, edit and delete notices
+- Create, edit and delete categories
+- View system statistics
 
 ---
 
-## ⚙️ 4. Update Database Config (if needed)
+# 🛠️ Technology Stack
 
-Open your PHP config / connection file and make sure:
+## Frontend
 
-host = localhost  
-user = root  
-password = (empty)  
-database = smart_student_helpdesk  
+- React.js
+- HTML5
+- CSS3
+- JavaScript
+- React Router
+- Axios
 
----
+## Backend
 
-## ▶️ 5. Run the Project
+- Node.js
+- Express.js
+- REST API
 
-Open browser:
+## Database
 
-http://localhost/smart-student-helpdesk/
+- MongoDB
+- Mongoose
 
----
+## Authentication & Security
 
-## 🔁 For Making Changes
+- JSON Web Token (JWT)
+- bcryptjs
+- Role-Based Authorization
 
-After editing code:
+## API Testing
 
-git add .
-git commit -m "your message"
-git push
+- Postman
 
----
+## Development Tools
 
-## 📎 Notes
-
-- XAMPP itself is NOT included in GitHub
-- Database is provided as .sql file
-- Everyone must import DB locally
-- Don’t push XAMPP folders or personal configs
+- Visual Studio Code
+- Git
+- GitHub
+- MongoDB Compass / MongoDB Shell
 
 ---
