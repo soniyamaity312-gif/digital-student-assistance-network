@@ -15,7 +15,7 @@ const COOKIE_OPTIONS = {
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-  const { name, email, password, role, department } = req.body;
+  const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({
@@ -40,8 +40,8 @@ router.post('/register', async (req, res) => {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password: hashedPassword,
-      role: role || 'student',
-      department: department || null
+      role: "student",
+      department: ""
     });
 
     return res.status(201).json({

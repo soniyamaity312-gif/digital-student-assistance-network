@@ -5,64 +5,66 @@ import Layout from "../../components/Layout";
 import Loading from "../../components/Loading";
 
 export default function StaffDashboard() {
-  const [requests, setRequests] = useState([]);
+  const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const loadComplaints = async () => {
+    try {
+      setError("");
+
+      const response = await api.get("/complaints");
+
+      setComplaints(response.data.data || []);
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err.response?.data?.message ||
+        "Unable to load complaints."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadRequests = async () => {
-      try {
-        const response = await api.get("/complaints");
-
-        setRequests(response.data.data || []);
-      } catch (err) {
-        console.error("Staff dashboard error:", err);
-
-        setError(
-          err.response?.data?.message ||
-            "Unable to load assigned requests."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadRequests();
+    loadComplaints();
   }, []);
 
   if (loading) {
     return <Loading />;
   }
 
-  const pending = requests.filter(
-    (r) => r.status === "pending"
+  const pending = complaints.filter(
+    (item) => item.status === "pending"
   ).length;
 
-  const progress = requests.filter(
-    (r) => r.status === "in_progress"
+  const inProgress = complaints.filter(
+    (item) => item.status === "in_progress"
   ).length;
 
-  const resolved = requests.filter(
-    (r) => r.status === "resolved"
+  const resolved = complaints.filter(
+    (item) => item.status === "resolved"
   ).length;
 
   return (
     <Layout>
+
       <div className="page-head">
         <div>
           <h1>Staff Dashboard</h1>
-
           <p className="muted">
-            Requests assigned to your department.
+            Manage complaints assigned to your department.
           </p>
         </div>
 
-        <Link
-          className="btn btn-primary"
-          to="/staff/requests"
+        <button
+          className="btn btn-secondary"
+          onClick={loadComplaints}
         >
-          View Requests
-        </Link>
+          ↻ Refresh
+        </button>
       </div>
 
       {error && (
@@ -72,9 +74,10 @@ export default function StaffDashboard() {
       )}
 
       <div className="stats">
+
         <div className="stat">
-          <span>Assigned Requests</span>
-          <b>{requests.length}</b>
+          <span>Total Complaints</span>
+          <b>{complaints.length}</b>
         </div>
 
         <div className="stat">
@@ -84,46 +87,115 @@ export default function StaffDashboard() {
 
         <div className="stat">
           <span>In Progress</span>
-          <b>{progress}</b>
+          <b>{inProgress}</b>
         </div>
 
         <div className="stat">
           <span>Resolved</span>
           <b>{resolved}</b>
         </div>
+
       </div>
+
 
       <div className="panel">
-        <h2>Recent Requests</h2>
 
-        {requests.length > 0 ? (
-          requests.slice(0, 5).map((request) => (
-            <div
-              className="list-row"
-              key={request._id}
-            >
-              <div>
-                <b>{request.subject}</b>
-
-                <p className="muted">
-                  {request.student_name || "Student"} ·{" "}
-                  {request.department_name}
-                </p>
-              </div>
-
-              <Link
-                to={`/staff/request/${request._id}`}
-              >
-                Open
-              </Link>
-            </div>
-          ))
-        ) : (
-          <div className="empty">
-            No assigned requests.
+        <div className="section-head">
+          <div>
+            <h2>Recent Complaints</h2>
+            <p className="muted">
+              Complaints from your department
+            </p>
           </div>
+
+          <Link
+            to="/staff/requests"
+            className="btn btn-primary"
+          >
+            View All
+          </Link>
+        </div>
+
+
+        {complaints.length === 0 ? (
+
+          <div className="empty">
+            No complaints found for your department.
+          </div>
+
+        ) : (
+
+          <div className="table-wrap">
+
+            <table>
+
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Subject</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                {complaints.slice(0, 5).map((complaint) => (
+
+                  <tr
+                    key={complaint._id || complaint.id}
+                  >
+
+                    <td>
+                      {complaint.student_name}
+                    </td>
+
+                    <td>
+                      <strong>
+                        {complaint.subject}
+                      </strong>
+                    </td>
+
+                    <td>
+                      <span className="status">
+                        {complaint.priority}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span className="status">
+                        {complaint.status === "in_progress"
+                          ? "In Progress"
+                          : complaint.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      <Link
+                        to={`/staff/request/${
+                          complaint._id || complaint.id
+                        }`}
+                        className="btn btn-primary btn-small"
+                      >
+                        View
+                      </Link>
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
         )}
+
       </div>
+
     </Layout>
   );
 }

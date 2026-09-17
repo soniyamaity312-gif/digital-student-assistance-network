@@ -9,6 +9,7 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/auth.js';
 import complaintsRoutes from './routes/complaints.js';
 import departmentsRoutes from './routes/departments.js';
+import adminRoutes from "./routes/admin.js";
 
 const app = express();
 
@@ -44,6 +45,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/complaints', complaintsRoutes);
 app.use('/api/departments', departmentsRoutes);
+app.use('/api/admin', adminRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -14,7 +14,11 @@ export default function Login() {
     if (!form.email || !form.password) return setError("Email and password are required.");
     try {
       setBusy(true);
-      const data = await login(form.email, form.password);
+      const data = await login(
+        form.email,
+        form.password,
+        "student"
+      );
       navigate(`/${data.user.role}/dashboard`);
     } catch (err) {
       setError(err.response?.data?.message || "Login failed.");

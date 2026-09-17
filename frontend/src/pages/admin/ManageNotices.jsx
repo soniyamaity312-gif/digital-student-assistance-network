@@ -1,13 +1,214 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import Layout from "../../components/Layout";
+import Loading from "../../components/Loading";
 
-export default function ManageNotices(){
- const empty={title:"",description:"",targetAudience:"All"};const [form,setForm]=useState(empty),[rows,setRows]=useState([]),[editing,setEditing]=useState(null),[error,setError]=useState("");
- const load=()=>api.get("/notices").then(r=>setRows(r.data)).catch(e=>setError(e.response?.data?.message||"Unable to load notices."));
- useEffect(()=>{load()},[]);
- const save=async e=>{e.preventDefault();try{if(editing)await api.put(`/notices/${editing}`,form);else await api.post("/notices",form);setForm(empty);setEditing(null);load()}catch(e){setError(e.response?.data?.message||"Save failed.")}};
- const edit=n=>{setEditing(n._id);setForm({title:n.title,description:n.description,targetAudience:n.targetAudience})};
- const del=async id=>{if(!confirm("Delete this notice?"))return;try{await api.delete(`/notices/${id}`);load()}catch(e){setError(e.response?.data?.message||"Delete failed.")}};
- return <Layout><h1>Manage Notices</h1>{error&&<div className="alert error">{error}</div>}<div className="two-col"><div className="panel"><h2>{editing?"Edit Notice":"Create Notice"}</h2><form onSubmit={save}><label>Title<input value={form.title} onChange={e=>setForm({...form,title:e.target.value})}/></label><label>Description<textarea rows="7" value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></label><label>Audience<select value={form.targetAudience} onChange={e=>setForm({...form,targetAudience:e.target.value})}><option>All</option><option>Students</option><option>Staff</option></select></label><button className="btn btn-primary">{editing?"Update":"Publish"}</button>{editing&&<button type="button" className="btn btn-secondary" onClick={()=>{setEditing(null);setForm(empty)}}>Cancel</button>}</form></div><div className="panel"><h2>Published Notices</h2>{rows.map(n=><div className="list-row" key={n._id}><div><b>{n.title}</b><p>{n.targetAudience}</p></div><div><button className="btn btn-small" onClick={()=>edit(n)}>Edit</button> <button className="btn btn-danger btn-small" onClick={()=>del(n._id)}>Delete</button></div></div>)}{!rows.length&&<div className="empty">No notices.</div>}</div></div></Layout>;
+export default function ManageNotices() {
+  const [notices, setNotices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const [form, setForm] = useState({
+    title: "",
+    message: "",
+    category: "General"
+  });
+
+  const loadNotices = async () => {
+    try {
+      const response =
+        await api.get("/admin/notices");
+
+      setNotices(response.data.data || []);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        "Unable to load notices."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadNotices();
+  }, []);
+
+  const createNotice = async (e) => {
+    e.preventDefault();
+
+    try {
+      setError("");
+      setMessage("");
+
+      await api.post("/admin/notices", form);
+
+      setMessage("Notice published successfully.");
+
+      setForm({
+        title: "",
+        message: "",
+        category: "General"
+      });
+
+      loadNotices();
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        "Unable to create notice."
+      );
+    }
+  };
+
+  const deleteNotice = async (id) => {
+    if (!window.confirm("Delete this notice?")) {
+      return;
+    }
+
+    try {
+      await api.delete(`/admin/notices/${id}`);
+      loadNotices();
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        "Unable to delete notice."
+      );
+    }
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  return (
+    <Layout>
+
+      <div className="page-head">
+        <div>
+          <h1>Manage Notices</h1>
+          <p className="muted">
+            Publish important information for students.
+          </p>
+        </div>
+      </div>
+
+      {error && (
+        <div className="alert error">{error}</div>
+      )}
+
+      {message && (
+        <div className="alert success">{message}</div>
+      )}
+
+      <div className="two-col">
+
+        <div className="panel">
+          <h2>Create Notice</h2>
+
+          <form onSubmit={createNotice}>
+
+            <label>
+              Title
+              <input
+                value={form.title}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    title: e.target.value
+                  })
+                }
+                placeholder="Notice title"
+              />
+            </label>
+
+            <label>
+              Category
+              <input
+                value={form.category}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    category: e.target.value
+                  })
+                }
+                placeholder="General"
+              />
+            </label>
+
+            <label>
+              Message
+              <textarea
+                rows="6"
+                value={form.message}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    message: e.target.value
+                  })
+                }
+                placeholder="Write notice..."
+              />
+            </label>
+
+            <button className="btn btn-primary">
+              Publish Notice
+            </button>
+
+          </form>
+        </div>
+
+
+        <div className="panel">
+
+          <h2>Published Notices</h2>
+
+          {notices.length === 0 ? (
+            <div className="empty">
+              No notices published.
+            </div>
+          ) : (
+
+            notices.map((notice) => (
+
+              <div
+                className="list-row"
+                key={notice._id}
+              >
+
+                <div>
+                  <strong>
+                    {notice.title}
+                  </strong>
+
+                  <p className="muted">
+                    {notice.message}
+                  </p>
+
+                  <small>
+                    {notice.category}
+                  </small>
+                </div>
+
+                <button
+                  className="btn btn-danger btn-small"
+                  onClick={() =>
+                    deleteNotice(notice._id)
+                  }
+                >
+                  Delete
+                </button>
+
+              </div>
+
+            ))
+
+          )}
+
+        </div>
+
+      </div>
+
+    </Layout>
+  );
 }

@@ -4,144 +4,172 @@ import React, {
 } from "react";
 
 import {
-  useParams,
-  Link
+  Link,
+  useParams
 } from "react-router-dom";
 
 import api from "../../services/api";
 import Layout from "../../components/Layout";
 import Loading from "../../components/Loading";
 
-const statuses = [
-  {
-    value: "pending",
-    label: "Pending"
-  },
-  {
-    value: "in_progress",
-    label: "In Progress"
-  },
-  {
-    value: "resolved",
-    label: "Resolved"
-  }
-];
-
 export default function StaffRequestDetails() {
   const { id } = useParams();
 
-  const [request, setRequest] = useState(null);
-  const [status, setStatus] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [complaint, setComplaint] =
+    useState(null);
 
-  const loadRequest = async () => {
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
+
+  const [message, setMessage] =
+    useState("");
+
+  const [reply, setReply] =
+    useState("");
+
+  const [status, setStatus] =
+    useState("");
+
+
+  const loadComplaint = async () => {
     try {
       setError("");
 
-      const response = await api.get(
-        `/complaints/${id}`
-      );
+      const response =
+        await api.get(`/complaints/${id}`);
 
       const data = response.data.data;
 
-      setRequest(data.complaint);
-      setStatus(data.complaint.status);
+      setComplaint(data);
+      setStatus(data.status);
+
     } catch (err) {
-      console.error(
-        "Request details error:",
-        err
-      );
+      console.error(err);
 
       setError(
         err.response?.data?.message ||
-          "Unable to load request."
+        "Unable to load complaint."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
+
   useEffect(() => {
-    loadRequest();
+    loadComplaint();
   }, [id]);
 
-  const updateStatus = async () => {
+
+  const updateStatus = async (newStatus) => {
     try {
-      setBusy(true);
       setError("");
+      setMessage("");
 
       await api.put(
         `/complaints/${id}/status`,
         {
-          status
+          status: newStatus
         }
       );
 
-      await loadRequest();
-    } catch (err) {
-      console.error(
-        "Status update error:",
-        err
+      setStatus(newStatus);
+
+      setMessage(
+        "Complaint status updated successfully."
       );
+
+      await loadComplaint();
+
+    } catch (err) {
+      console.error(err);
 
       setError(
         err.response?.data?.message ||
-          "Status update failed."
+        "Unable to update status."
       );
-    } finally {
-      setBusy(false);
     }
   };
 
-  const respond = async (e) => {
+
+  const sendReply = async (e) => {
     e.preventDefault();
 
-    if (!message.trim()) {
+    if (!reply.trim()) {
+      setError("Reply cannot be empty.");
       return;
     }
 
     try {
-      setBusy(true);
       setError("");
+      setMessage("");
 
       await api.post(
         `/complaints/${id}/reply`,
         {
-          message: message.trim()
+          message: reply.trim()
         }
       );
 
-      setMessage("");
+      setReply("");
 
-      await loadRequest();
-    } catch (err) {
-      console.error(
-        "Reply error:",
-        err
+      setMessage(
+        "Reply sent successfully."
       );
+
+      await loadComplaint();
+
+    } catch (err) {
+      console.error(err);
 
       setError(
         err.response?.data?.message ||
-          "Response failed."
+        "Unable to send reply."
       );
-    } finally {
-      setBusy(false);
     }
   };
 
-  if (!request && !error) {
+
+  if (loading) {
     return <Loading />;
   }
 
+
+  if (!complaint) {
+    return (
+      <Layout>
+        <div className="alert error">
+          Complaint not found.
+        </div>
+      </Layout>
+    );
+  }
+
+
   return (
     <Layout>
-      <Link to="/staff/requests">
-        ← Assigned Requests
-      </Link>
 
-      <h1>
-        {request?.subject || "Request Details"}
-      </h1>
+      <div className="page-head">
+
+        <div>
+          <Link to="/staff/requests">
+            ← Back to Requests
+          </Link>
+
+          <h1>
+            {complaint.subject}
+          </h1>
+
+          <p className="muted">
+            Complaint details
+          </p>
+        </div>
+
+      </div>
+
 
       {error && (
         <div className="alert error">
@@ -149,160 +177,183 @@ export default function StaffRequestDetails() {
         </div>
       )}
 
-      {request && (
-        <>
-          <div className="panel">
-            <div className="detail-grid">
 
-              <p>
-                <b>Student</b>
-                <br />
-                {request.student_name ||
-                  "Student"}
-              </p>
-
-              <p>
-                <b>Department</b>
-                <br />
-                {request.department_name}
-              </p>
-
-              <p>
-                <b>Priority</b>
-                <br />
-                {request.priority
-                  ? request.priority
-                      .charAt(0)
-                      .toUpperCase() +
-                    request.priority.slice(1)
-                  : "Medium"}
-              </p>
-
-              <p>
-                <b>Status</b>
-                <br />
-                {request.status
-                  ?.replace("_", " ")
-                  .replace(/\b\w/g, (c) =>
-                    c.toUpperCase()
-                  )}
-              </p>
-
-              <p>
-                <b>Created</b>
-                <br />
-                {request.created_at
-                  ? new Date(
-                      request.created_at
-                    ).toLocaleString()
-                  : "-"}
-              </p>
-
-            </div>
-
-            <hr />
-
-            <h3>Description</h3>
-
-            <p>
-              {request.description}
-            </p>
-
-            <hr />
-
-            <div className="inline">
-              <select
-                value={status}
-                onChange={(e) =>
-                  setStatus(e.target.value)
-                }
-              >
-                {statuses.map((item) => (
-                  <option
-                    key={item.value}
-                    value={item.value}
-                  >
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-
-              <button
-                className="btn btn-primary"
-                onClick={updateStatus}
-                disabled={busy}
-              >
-                {busy
-                  ? "Updating..."
-                  : "Update Status"}
-              </button>
-            </div>
-          </div>
-
-          <div className="panel">
-            <h2>Conversation</h2>
-
-            {request.replies?.length > 0 ? (
-              request.replies.map(
-                (reply) => (
-                  <div
-                    className="message"
-                    key={reply._id}
-                  >
-                    <b>
-                      {reply.user_name} (
-                      {reply.user_role}
-                      )
-                    </b>
-
-                    <p>
-                      {reply.message}
-                    </p>
-
-                    {reply.created_at && (
-                      <small>
-                        {new Date(
-                          reply.created_at
-                        ).toLocaleString()}
-                      </small>
-                    )}
-                  </div>
-                )
-              )
-            ) : (
-              <div className="empty">
-                No responses yet.
-              </div>
-            )}
-
-            <form onSubmit={respond}>
-              <label>
-                Reply
-
-                <textarea
-                  rows="4"
-                  value={message}
-                  onChange={(e) =>
-                    setMessage(
-                      e.target.value
-                    )
-                  }
-                  placeholder="Write a reply..."
-                />
-              </label>
-
-              <button
-                className="btn btn-primary"
-                disabled={busy}
-              >
-                {busy
-                  ? "Sending..."
-                  : "Send Reply"}
-              </button>
-            </form>
-          </div>
-        </>
+      {message && (
+        <div className="alert success">
+          {message}
+        </div>
       )}
+
+
+      <div className="detail-grid">
+
+        <div className="card">
+          <span className="muted">
+            Student
+          </span>
+
+          <strong>
+            {complaint.student_name}
+          </strong>
+        </div>
+
+
+        <div className="card">
+          <span className="muted">
+            Department
+          </span>
+
+          <strong>
+            {complaint.department_name}
+          </strong>
+        </div>
+
+
+        <div className="card">
+          <span className="muted">
+            Priority
+          </span>
+
+          <strong>
+            {complaint.priority}
+          </strong>
+        </div>
+
+
+        <div className="card">
+          <span className="muted">
+            Status
+          </span>
+
+          <strong>
+            {status === "in_progress"
+              ? "In Progress"
+              : status}
+          </strong>
+        </div>
+
+      </div>
+
+
+      <div className="two-col">
+
+        <div className="panel">
+
+          <h2>Description</h2>
+
+          <p>
+            {complaint.description}
+          </p>
+
+
+          <h2>
+            Update Status
+          </h2>
+
+          <select
+            value={status}
+            onChange={(e) =>
+              updateStatus(e.target.value)
+            }
+          >
+            <option value="pending">
+              Pending
+            </option>
+
+            <option value="in_progress">
+              In Progress
+            </option>
+
+            <option value="resolved">
+              Resolved
+            </option>
+          </select>
+
+        </div>
+
+
+        <div className="panel">
+
+          <h2>Conversation</h2>
+
+          {complaint.replies?.length === 0 ? (
+
+            <div className="empty">
+              No replies yet.
+            </div>
+
+          ) : (
+
+            complaint.replies?.map(
+              (item, index) => (
+
+                <div
+                  className="message"
+                  key={
+                    item._id || index
+                  }
+                >
+
+                  <strong>
+                    {item.user_name}
+                  </strong>
+
+                  <small className="muted">
+                    {" "}
+                    ({item.user_role})
+                  </small>
+
+                  <p>
+                    {item.message}
+                  </p>
+
+                  <small className="muted">
+                    {item.created_at
+                      ? new Date(
+                          item.created_at
+                        ).toLocaleString()
+                      : ""}
+                  </small>
+
+                </div>
+
+              )
+            )
+
+          )}
+
+
+          <form onSubmit={sendReply}>
+
+            <label>
+              Reply to Student
+
+              <textarea
+                rows="4"
+                value={reply}
+                onChange={(e) =>
+                  setReply(
+                    e.target.value
+                  )
+                }
+                placeholder="Write your response..."
+              />
+
+            </label>
+
+            <button
+              className="btn btn-primary"
+              type="submit"
+            >
+              Send Reply
+            </button>
+
+          </form>
+
+        </div>
+
+      </div>
+
     </Layout>
   );
 }

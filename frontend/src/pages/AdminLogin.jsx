@@ -27,7 +27,8 @@ export default function AdminLogin() {
 
       const data = await login(
         form.email,
-        form.password
+        form.password,
+        "admin"
       );
 
       if (data.user.role !== "admin") {

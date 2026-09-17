@@ -27,7 +27,8 @@ export default function StaffLogin() {
 
       const data = await login(
         form.email,
-        form.password
+        form.password,
+        "staff"
       );
 
       if (data.user.role !== "staff") {

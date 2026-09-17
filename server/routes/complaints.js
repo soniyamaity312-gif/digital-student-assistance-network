@@ -44,22 +44,36 @@ function detectPriority(subject, description) {
 }
 
 // GET /api/complaints (list complaints)
+// GET /api/complaints (list complaints)
 router.get('/', requireAuth, async (req, res) => {
   try {
     const { role, id: userId } = req.user;
+
     let query = {};
 
     if (role === 'student') {
+      // Student sees only their own complaints
       query = { user_id: userId };
-    } else if (role === 'staff' && req.user.department) {
-      query = { department_name: req.user.department };
+
+    } else if (role === 'staff') {
+      // Staff sees complaints from their department
+      query = {
+        department_name: req.user.department
+      };
+
+    } else if (role === 'admin') {
+      // Admin sees all complaints
+      query = {};
     }
 
-    const complaints = await Complaint.find(query).sort({ created_at: -1 });
+    const complaints = await Complaint.find(query)
+      .sort({ created_at: -1 });
+
     return res.json({
       status: 'success',
       data: complaints
     });
+
   } catch (error) {
     return res.status(500).json({
       status: 'error',
@@ -67,6 +81,7 @@ router.get('/', requireAuth, async (req, res) => {
     });
   }
 });
+
 
 // GET /api/complaints/:id (complaint details)
 router.get('/:id', requireAuth, async (req, res) => {
@@ -131,6 +146,69 @@ router.post('/', requireAuth, async (req, res) => {
       status: 'error',
       message: 'Failed to lodge complaint: ' + error.message
     });
+  }
+});
+
+router.put("/:id/status", requireAuth, async (req, res) => {
+  const { status } = req.body;
+
+  const allowedStatuses = [
+    "pending",
+    "in_progress",
+    "resolved"
+  ];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+      status: "error",
+      message: "Invalid status"
+    });
+  }
+
+  try {
+    const complaint =
+      await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({
+        status: "error",
+        message: "Complaint not found"
+      });
+    }
+
+    if (
+      req.user.role === "staff" &&
+      req.user.department &&
+      complaint.department_name !==
+        req.user.department
+    ) {
+      return res.status(403).json({
+        status: "error",
+        message:
+          "Access denied for this department"
+      });
+    }
+
+    complaint.status = status;
+
+    await complaint.save();
+
+    return res.json({
+      status: "success",
+      message:
+        "Status updated successfully",
+      data: complaint
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      status: "error",
+      message:
+        "Failed to update status: " +
+        error.message
+    });
+
   }
 });
 

@@ -5,25 +5,24 @@ import Layout from "../../components/Layout";
 import Loading from "../../components/Loading";
 
 export default function StaffRequests() {
-  const [requests, setRequests] = useState([]);
+  const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("All");
   const [error, setError] = useState("");
+  const [filter, setFilter] = useState("all");
 
-  const loadRequests = async () => {
+  const loadComplaints = async () => {
     try {
-      setLoading(true);
       setError("");
 
       const response = await api.get("/complaints");
 
-      setRequests(response.data.data || []);
+      setComplaints(response.data.data || []);
     } catch (err) {
-      console.error("Staff requests error:", err);
+      console.error(err);
 
       setError(
         err.response?.data?.message ||
-          "Unable to load requests."
+        "Unable to load complaints."
       );
     } finally {
       setLoading(false);
@@ -31,38 +30,70 @@ export default function StaffRequests() {
   };
 
   useEffect(() => {
-    loadRequests();
+    loadComplaints();
   }, []);
 
   if (loading) {
     return <Loading />;
   }
 
-  const shown =
-    filter === "All"
-      ? requests
-      : requests.filter(
-          (request) => request.status === filter
+  const filteredComplaints =
+    filter === "all"
+      ? complaints
+      : complaints.filter(
+          (complaint) =>
+            complaint.status === filter
         );
 
   return (
     <Layout>
-      <div className="page-head">
-        <h1>Assigned Requests</h1>
 
-        <select
-          className="filter"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="All">All</option>
-          <option value="pending">Pending</option>
-          <option value="in_progress">
-            In Progress
-          </option>
-          <option value="resolved">Resolved</option>
-        </select>
+      <div className="page-head">
+
+        <div>
+          <h1>Assigned Requests</h1>
+          <p className="muted">
+            View and manage complaints from your department.
+          </p>
+        </div>
+
+        <div className="inline">
+
+          <select
+            className="filter"
+            value={filter}
+            onChange={(e) =>
+              setFilter(e.target.value)
+            }
+          >
+            <option value="all">
+              All Requests
+            </option>
+
+            <option value="pending">
+              Pending
+            </option>
+
+            <option value="in_progress">
+              In Progress
+            </option>
+
+            <option value="resolved">
+              Resolved
+            </option>
+          </select>
+
+          <button
+            className="btn btn-secondary"
+            onClick={loadComplaints}
+          >
+            ↻ Refresh
+          </button>
+
+        </div>
+
       </div>
+
 
       {error && (
         <div className="alert error">
@@ -70,81 +101,105 @@ export default function StaffRequests() {
         </div>
       )}
 
-      <div className="table-wrap panel">
-        <table>
-          <thead>
-            <tr>
-              <th>Student</th>
-              <th>Subject</th>
-              <th>Department</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th></th>
-            </tr>
-          </thead>
 
-          <tbody>
-            {shown.map((request) => (
-              <tr key={request._id}>
-                <td>
-                  {request.student_name || "Student"}
-                </td>
+      <div className="panel table-wrap">
 
-                <td>{request.subject}</td>
+        {filteredComplaints.length === 0 ? (
 
-                <td>
-                  {request.department_name}
-                </td>
-
-                <td>
-                  {request.priority
-                    ? request.priority
-                        .charAt(0)
-                        .toUpperCase() +
-                      request.priority.slice(1)
-                    : "Medium"}
-                </td>
-
-                <td>
-                  <span className="status">
-                    {request.status
-                      ? request.status
-                          .replace("_", " ")
-                          .replace(/\b\w/g, (c) =>
-                            c.toUpperCase()
-                          )
-                      : "Pending"}
-                  </span>
-                </td>
-
-                <td>
-                  {request.created_at
-                    ? new Date(
-                        request.created_at
-                      ).toLocaleDateString()
-                    : "-"}
-                </td>
-
-                <td>
-                  <Link
-                    className="btn btn-small"
-                    to={`/staff/request/${request._id}`}
-                  >
-                    Open
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {!shown.length && (
           <div className="empty">
-            No requests found.
+            No complaints found.
           </div>
+
+        ) : (
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Subject</th>
+                <th>Department</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              {filteredComplaints.map(
+                (complaint) => (
+
+                  <tr
+                    key={
+                      complaint._id ||
+                      complaint.id
+                    }
+                  >
+
+                    <td>
+                      {complaint.student_name}
+                    </td>
+
+                    <td>
+                      <strong>
+                        {complaint.subject}
+                      </strong>
+                    </td>
+
+                    <td>
+                      {complaint.department_name}
+                    </td>
+
+                    <td>
+                      <span className="status">
+                        {complaint.priority}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span className="status">
+                        {complaint.status ===
+                        "in_progress"
+                          ? "In Progress"
+                          : complaint.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      {complaint.created_at
+                        ? new Date(
+                            complaint.created_at
+                          ).toLocaleDateString()
+                        : "-"}
+                    </td>
+
+                    <td>
+                      <Link
+                        to={`/staff/request/${
+                          complaint._id ||
+                          complaint.id
+                        }`}
+                        className="btn btn-primary btn-small"
+                      >
+                        Open
+                      </Link>
+                    </td>
+
+                  </tr>
+
+                )
+              )}
+
+            </tbody>
+
+          </table>
+
         )}
+
       </div>
+
     </Layout>
   );
 }
