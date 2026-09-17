@@ -1,42 +1,58 @@
-import mongoose from 'mongoose';
-
-// TODO: Department, Complaint, ComplaintReply, and StatusHistory models are coming next.
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
+
     email: {
       type: String,
       required: true,
       unique: true,
-      trim: true,
       lowercase: true,
+      trim: true
     },
+
     password: {
       type: String,
-      required: true,
+      required: true
     },
+
     role: {
       type: String,
-      enum: ['student', 'staff', 'admin'],
-      default: 'student',
-      required: true,
+      enum: ["student", "staff", "admin"],
+      default: "student"
     },
+
+    studentId: {
+      type: String,
+      default: ""
+    },
+
     department: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Department',
-      default: null,
+      type: String,
+      default: "",
+      trim: true
     },
+
+    year: {
+      type: String,
+      default: ""
+    },
+
+    phone: {
+      type: String,
+      default: ""
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

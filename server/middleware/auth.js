@@ -12,7 +12,10 @@ export const requireAuth = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_jwt_key_dsan_2026');
+     const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'secret'
+    );
     req.user = decoded;
     next();
   } catch (error) {

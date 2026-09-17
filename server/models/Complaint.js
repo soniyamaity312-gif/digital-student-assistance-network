@@ -13,6 +13,16 @@ const complaintSchema = new mongoose.Schema({
   student_name: { type: String, default: '' },
   department_name: { type: String, required: true },
   department_id: { type: String, default: '' },
+  assigned_staff_id: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User',
+  default: null
+},
+
+assigned_staff_name: {
+  type: String,
+  default: ''
+},
   subject: { type: String, required: true },
   description: { type: String, required: true },
   priority: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },

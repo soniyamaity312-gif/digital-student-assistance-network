@@ -88,7 +88,8 @@ router.post('/login', async (req, res) => {
         {
           id: user._id.toString(),
           name: user.name,
-          role: user.role
+          role: user.role,
+          department: user.department || ""
         },
         process.env.JWT_SECRET || 'secret',
         { expiresIn: '30d' }

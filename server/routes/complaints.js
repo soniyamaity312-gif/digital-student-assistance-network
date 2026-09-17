@@ -172,4 +172,65 @@ router.post('/:id/reply', requireAuth, async (req, res) => {
   }
 });
 
+// PUT /api/complaints/:id/status
+router.put('/:id/status', requireAuth, async (req, res) => {
+  const { status } = req.body;
+
+  const allowedStatuses = [
+    'pending',
+    'in_progress',
+    'resolved'
+  ];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid status'
+    });
+  }
+
+  try {
+    const complaint = await Complaint.findById(
+      req.params.id
+    );
+
+    if (!complaint) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Complaint not found'
+      });
+    }
+
+    // Staff can update complaints belonging
+    // to their department.
+    if (
+      req.user.role === 'staff' &&
+      req.user.department &&
+      complaint.department_name !== req.user.department
+    ) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Access denied for this department'
+      });
+    }
+
+    complaint.status = status;
+
+    await complaint.save();
+
+    return res.json({
+      status: 'success',
+      message: 'Status updated successfully',
+      data: complaint
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      message:
+        'Failed to update status: ' +
+        error.message
+    });
+  }
+});
+
 export default router;
